@@ -42,17 +42,19 @@ const getDistanceBetween = (locFrom, locTo, distances) => {
   return filteredObj[0].distance
 }
 
+const getDistance = (stops, distances) => reduce(stops,
+  (acc, stop) => {
+    let { distance, prevStop } = acc;
+    distance += (prevStop === 'start') ? 0 : getDistanceBetween(prevStop, stop, distances)
+
+    return { distance, prevStop: stop }
+  },
+  { distance: 0, prevStop: 'start' }
+).distance
+
+
 const findDistance = (routes, distances) =>
-  map(routes, (route) => {
-    const distance = reduce(route.stops, (acc, stop) => {
-      let { distance, prevStop } = acc;
-      distance += (prevStop === 'start') ? 0 : getDistanceBetween(prevStop, stop, distances)
-
-      return { distance, prevStop: stop }
-    }, { distance: 0, prevStop: 'start' }).distance
-
-    return { ...route, distance }
-  })
+  map(routes, (route) => { return { ...route, distance: getDistance(route.stops, distances) } })
 
 
 console.log(findDistance(routes, distances))
