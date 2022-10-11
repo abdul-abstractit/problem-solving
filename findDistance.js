@@ -1,5 +1,4 @@
-const { filter, reduce, map } = require("@laufire/utils/collection")
-
+const { reduce, map, find } = require("@laufire/utils/collection")
 const distances = [
   {
     from: 'delhi',
@@ -36,26 +35,30 @@ const routes = [
   },
 ]
 
-const getDistanceBetween = (locFrom, locTo, distances) => {
-  const filteredObj = filter(distances, (distance) =>
-    (distance.from === locFrom && distance.to === locTo) || (distance.from === locTo && distance.to === locFrom))
-  return filteredObj[0].distance
-}
+const getDistanceBetweenLocation = ({ distances, locFrom, locTo }) => (find(distances, (distance) => {
+  const { from, to } = distance;
+  return (from === locFrom && to === locTo) || (from === locTo && to === locFrom)
+})).distance
 
-const getDistance = (stops, distances) => reduce(stops,
-  (acc, stop) => {
+const getRouteDistance = ({ route, distances }) => {
+  const { stops } = route;
+  return reduce(stops, (acc, stop) => {
     let { distance, prevStop } = acc;
-    distance += (prevStop === 'start') ? 0 : getDistanceBetween(prevStop, stop, distances)
+    distance += (prevStop === 'start') ? 0 : getDistanceBetweenLocation({ distances, locFrom: prevStop, locTo: stop })
 
     return { distance, prevStop: stop }
   },
-  { distance: 0, prevStop: 'start' }
-).distance
+    { distance: 0, prevStop: 'start' }
+  ).distance
+}
+
+const findDistance = ({routes, distances}) =>
+  map(routes, (route) => ({ ...route, distance: getRouteDistance({ route, distances }) }))
 
 
-const findDistance = (routes, distances) =>
-  map(routes, (route) => { return { ...route, distance: getDistance(route.stops, distances) } })
+const main = ({ routes, distances }) => {
+  console.log(findDistance({routes, distances}))
+}
 
 
-console.log(findDistance(routes, distances))
-
+main({ routes, distances })
