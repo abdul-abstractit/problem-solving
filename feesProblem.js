@@ -3,35 +3,40 @@ const { map } = require("@laufire/utils/collection")
 const person = [
   {
     name: 'Abdul Rahim',
-    gender: 'Male',
-    fees: 10000,
+    gender: 'male',
+    fees: 100,
   },
   {
     name: 'Karpagam',
-    gender: 'Female',
-    fees: 10000,
+    gender: 'female',
+    fees: 500,
   },
   {
-    name: 'Nithesh',
-    gender: 'Male',
-    fees: 10000,
+    name: 'Ram kumar',
+    gender: 'male',
+    fees: 1500,
   },
   {
     name: 'Nachiyammai',
-    gender: 'Female',
-    fees: 10000,
+    gender: 'female',
+    fees: 700,
   },
 ]
-
-const main = (person) => {
-  const updatedPerson = map(person, (person) => {
+const getUpdatedPerson = (person) => {
+  return map(person, (person) => {
     const { gender, fees } = person;
     const tenPercent = fees * 0.10;
-    return (gender === 'Male')
-      ? { ...person, additionalFees: tenPercent }
-      : { ...person, additionalFees: 100 }
+    const chooseGender = {
+      male: () => ({ ...person, additionalFees: tenPercent }),
+      female: () => ({ ...person, additionalFees: 100 })
+    }
+    return chooseGender[gender]()
   })
-  console.log(updatedPerson)
+}
+
+
+const main = (person) => {
+  console.table(getUpdatedPerson(person))
 }
 
 main(person)
