@@ -1,29 +1,6 @@
 const { map, reduce } = require("@laufire/utils/collection");
+const task = require("./data");
 
-const data = {
-  cost: 10,
-  name: 'buildHouse',
-  tasks: [
-    {
-      cost: 5,
-      name: 'purchase material',
-      tasks: [
-        {
-          cost: 10,
-          name: 'purchase cement',
-        },
-        {
-          cost: 15,
-          name: 'purchase steel',
-        },
-      ],
-    },
-    {
-      cost: 0,
-      name: 'invite people',
-    },
-  ],
-};
 
 const calcSubTasksCost = (tasks) => reduce(tasks, (acc, {cost}) => acc + cost, 0);
 
@@ -38,4 +15,4 @@ const calculateCost = (task) => {
   })
 }
 
-console.log(calculateCost(data));
+console.log(calculateCost(task));
