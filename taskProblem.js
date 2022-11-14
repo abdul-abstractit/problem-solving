@@ -25,14 +25,15 @@ const data = {
   ],
 };
 
-const calcSubTasksCost = (tasks) => reduce(tasks, (acc, task) => acc + task.cost, 0);
+const calcSubTasksCost = (tasks) => reduce(tasks, (acc, {cost}) => acc + cost, 0);
 
 const calculateCost = (task) => {
-  const { cost, tasks } = task;
-  const calculatedSubTasks = (tasks) ? map(tasks, (task) => calculateCost(task)) : null;
+  const { cost, tasks: subTasks=[] } = task;
+  const calculatedSubTasks = map(subTasks, calculateCost);
+
   return ({
     ...task,
-    cost: (tasks) ? cost + calcSubTasksCost(calculatedSubTasks) : cost,
+    cost: cost + calcSubTasksCost(calculatedSubTasks),
     tasks: calculatedSubTasks
   })
 }
