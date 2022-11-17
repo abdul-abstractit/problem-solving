@@ -9,14 +9,16 @@ const operation = (n1,n2,o) => {
   return result
 } 
 
-const temp = reduce(
+const result = reduce(
   ["2","+","5","/","3","+","2","+","5"],
   (acc, num, i, arr)=>{
-    const {result} = acc;
-    const temp = {result:(num==='+'||num==='-'||num==='*'||num==='/')? operation(parseInt(arr[i-1]),parseInt(arr[i+1]),num) : result};
+    const result = (num==='+'||num==='-'||num==='*'||num==='/')
+    ? operation(parseInt(arr[i-1]),parseInt(arr[i+1]),num) 
+    : acc;
+   
     arr[i+1]= operation(parseInt(arr[i-1]),parseInt(arr[i+1]),num) || arr[i+1]
-    return temp
+    return result
   },
-  {result:0})
+  0)
 
-console.log(temp);
+console.log(result);
