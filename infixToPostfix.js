@@ -31,16 +31,20 @@ const handleOperator = (context) => {
 
 
 const infixToPostfix = (collection) =>
-  reduce(collection, ({ stack, result }, character) =>
-    operators.includes(character)
+  reduce(collection, ({ stack, result }, character,i,arr) =>{
+    const isLastChar = i+1 === arr.length;
+
+    return isLastChar ? { stack, result: [...result, character, ...stack.reverse()] }
+    :operators.includes(character)
       ? handleOperator({ stack, result, character })
       : { stack, result: [...result, character] }
+  }
     , { stack: [], result: [] }
-  );
+  ).result;
 
-console.log(infixToPostfix([2,"+",3,"/",3,"*",2,"*",2,"-",5]));
+module.exports=infixToPostfix;
 
-/*
+/* Rules
 
 First Start scanning the expression from left to right
 If the scanned character is an operand, output it, i.e. print it
@@ -53,9 +57,4 @@ Now, we should repeat the steps 2 – 6 until the whole infix i.e. whole charact
 Print output
 Do the pop and output (print) until stack is not empty
 
-*/
-
-/*
-Evaluation rule of a Postfix Expression states:
-While reading the expression from left to right, push the element in the stack if it is an operand. Pop the two operands from the stack, if the element is an operator and then evaluate it. Push back the result of the evaluation. Repeat it till the end of the expression.
 */
