@@ -43,7 +43,12 @@ const throwError = ({ input, output }) => {
   throw (`Error: ${input} for this, expected result is ${output}`)
 }
 const test = (fn, cases) => {
-  cases.map(({ input, output }, i) => fn(input) === output || throwError({ input, output }));
+  cases.map(({ input, output }, i) => {
+    fn(input) === output 
+      ? console.log(`Test ${i+1} passed`)
+      : throwError({ input, output });
+    console.log(`Result: Input ${input} output: ${fn(input)}`)
+  });
 }
 
 test(evaluate, cases)

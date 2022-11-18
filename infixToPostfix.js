@@ -31,18 +31,18 @@ const handleOperator = (context) => {
 
 
 const infixToPostfix = (collection) =>
-  reduce(collection, ({ stack, result }, character,i,arr) =>{
-    const isLastChar = i+1 === arr.length;
+  reduce(collection, ({ stack, result }, character, i, arr) => {
+    const isLastChar = i + 1 === arr.length;
 
     return isLastChar ? { stack, result: [...result, character, ...stack.reverse()] }
-    :operators.includes(character)
-      ? handleOperator({ stack, result, character })
-      : { stack, result: [...result, character] }
+      : operators.includes(character)
+        ? handleOperator({ stack, result, character })
+        : { stack, result: [...result, character] }
   }
     , { stack: [], result: [] }
   ).result;
 
-module.exports=infixToPostfix;
+module.exports = infixToPostfix;
 
 /* Rules
 
