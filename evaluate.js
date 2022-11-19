@@ -8,24 +8,20 @@ const operations = {
   '/': (num1, num2) => num1 / num2,
 }
 
-const calculate = ({ stack, input }) => {
-  const second = stack.pop();
-  const first = stack.pop();
-  const result = operations[input](first, second)
+const doOperation = ({ operands:[second,first,...rest], token }) => 
+  ({ operands: [operations[token](first, second), ...rest] })
 
-  return { stack: [...stack, result] }
-}
-const pushToStack = ({stack,input}) => ({ stack: [...stack, input] })
+const insertToOperands = ({operands, token}) => ({ operands: [token, ...operands] })
 
-const evaluatePostfix = ({ stack }, input) => !!operations[input] 
-  ? calculate({ stack, input }) 
-  : pushToStack({ stack, input })
+const evaluatePostfix = ({ operands }, token) => 
+  !!operations[token] ? doOperation({ operands, token }) 
+  : insertToOperands({ operands, token })
 
-const evaluate = (inputs) => parseInt(reduce(
-  infixToPostfix(inputs), 
+const evaluate = (tokens) => parseInt(reduce(
+  infixToPostfix(tokens), 
   evaluatePostfix, 
-  { stack: [] }
-).stack[0])
+  { operands: [] }
+).operands[0])
 
 
 module.exports = evaluate;

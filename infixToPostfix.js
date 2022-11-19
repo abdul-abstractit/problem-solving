@@ -1,33 +1,33 @@
 const { reduce, keys } = require("@laufire/utils/collection");
-const priorities = {
+const precedence = {
   '+': 0,
   '-': 0,
   '*': 1,
   '/': 1,
 }
-const operators = keys(priorities)
+const operators = keys(precedence)
 
-const pushToStack = ({ stack, operator, ...rest }) => ({ ...rest, stack: [...stack, operator] })
+const insertToOperators = ({ operators, operator, ...rest }) => ({ ...rest, operators: [operator, ...operators ] })
 
-const popAOperatorToResult = ({ stack, result, operator }) => {
-  const topOfStack = stack[stack.length - 1];
+const checkInsertOnOperatorsOrResult = (context) => {
+  const { operators: [target, ...rest], result, operator } = context;
 
-  return priorities[operator] <= priorities[topOfStack]
-    ? popAOperatorToResult({ result: [...result, topOfStack], stack: stack.slice(0, -1), operator })
-    : pushToStack({ stack, result, operator })
+  return precedence[operator] <= precedence[target]
+    ? checkInsertOnOperatorsOrResult({ result: [...result, target], operators: rest, operator })
+    : insertToOperators(context)
 }
 
 const handleOperator = (context) => {
-  const { stack, operator } = context;
-
-  return (stack.length === 0 || priorities[operator] > priorities[stack[stack.length - 1]])
-    ? pushToStack(context)
-    : popAOperatorToResult(context);
+  const { operators:[lastInserted] , operator } = context;
+  
+  return (!lastInserted || precedence[operator] > precedence[lastInserted])
+    ? insertToOperators(context)
+    : checkInsertOnOperatorsOrResult(context);
 };
 
-const operandToResult = ({ result, operand, ...rest }) => ({ ...rest, result: [...result, operand] });
+const moveOperandToResult = ({ result, operand, ...rest }) => ({ ...rest, result: [...result, operand] });
 
-const moveToResult = ({ stack, result, token }) => ({ result: [...result, token, ...stack.reverse()] })
+const moveToResult = ({ operators, result, token }) => ({ result: [...result, token, ...operators] })
 
 const infixToPostfix = (tokens) =>
   reduce(
@@ -36,8 +36,8 @@ const infixToPostfix = (tokens) =>
       ? moveToResult({ ...acc, token })
       : operators.includes(token)
         ? handleOperator({ ...acc, operator: token })
-        : operandToResult({ ...acc, operand: token }),
-    { stack: [], result: [] }
+        : moveOperandToResult({ ...acc, operand: token }),
+    { operators: [], result: [] }
   ).result;
 
 module.exports = infixToPostfix;
