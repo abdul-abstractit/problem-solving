@@ -21,11 +21,11 @@ const evaluatePostfix = ({ stack }, input) => !!operations[input]
   ? calculate({ stack, input }) 
   : pushToStack({ stack, input })
 
-const evaluate = (inputs) => reduce(
+const evaluate = (inputs) => parseInt(reduce(
   infixToPostfix(inputs), 
   evaluatePostfix, 
   { stack: [] }
-).stack[0]
+).stack[0])
 
 
 module.exports = evaluate;
