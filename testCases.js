@@ -2,10 +2,6 @@ const evaluate = require("./evaluate");
 
 const cases = [
   {
-    input: [2],
-    output: 2
-  },
-  {
     input: [2, "+", 5],
     output: 7
   },
@@ -52,7 +48,7 @@ const throwError = ({ input, output }) => {
 }
 const test = (fn, cases) => {
   cases.map(({ input, output }, i) => {
-    console.log(`Result: Input ${input} output: ${fn(input)}`)
+    console.log(`Result: Input ${input.join(' ')} output: ${fn(input)}`)
     fn(input) === output 
       ? console.log(`Test ${i+1} passed`)
       : throwError({ input, output });

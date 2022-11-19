@@ -7,35 +7,37 @@ const priorities = {
 }
 const operators = keys(priorities)
 
-const pushToStack = ({ stack, char, ...rest }) => ({ ...rest, stack: [...stack, char] })
+const pushToStack = ({ stack, operator, ...rest }) => ({ ...rest, stack: [...stack, operator] })
 
-const popAOperatorToResult = ({ stack, result, char }) => {
+const popAOperatorToResult = ({ stack, result, operator }) => {
   const topOfStack = stack[stack.length - 1];
 
-  return priorities[char] <= priorities[topOfStack]
-    ? popAOperatorToResult({ result: [...result, topOfStack], stack: stack.slice(0, -1), char })
-    : pushToStack({ stack, result, char })
+  return priorities[operator] <= priorities[topOfStack]
+    ? popAOperatorToResult({ result: [...result, topOfStack], stack: stack.slice(0, -1), operator })
+    : pushToStack({ stack, result, operator })
 }
 
-const handleOperator = ({ stack, result, char }) =>
-  (stack.length === 0 || priorities[char] > priorities[stack[stack.length - 1]])
-    ? pushToStack({ stack, result, char })
-    : popAOperatorToResult({ stack, result, char });
+const handleOperator = (context) => {
+  const { stack, operator } = context;
 
-const operandToResult = ({ result, char, ...rest }) => ({ ...rest, result: [...result, char] });
+  return (stack.length === 0 || priorities[operator] > priorities[stack[stack.length - 1]])
+    ? pushToStack(context)
+    : popAOperatorToResult(context);
+};
 
-const moveToResult = ({ stack, result, char }) => ({ result: [...result, char, ...stack.reverse()] })
+const operandToResult = ({ result, operand, ...rest }) => ({ ...rest, result: [...result, operand] });
 
-const infixToPostfix = (collection) =>
+const moveToResult = ({ stack, result, token }) => ({ result: [...result, token, ...stack.reverse()] })
+
+const infixToPostfix = (tokens) =>
   reduce(
-    collection, 
-    (acc, char, i) => i+1 === collection.length
-      ? moveToResult({ ...acc, char })
-      : operators.includes(char)
-        ? handleOperator({ ...acc, char })
-        : operandToResult({ ...acc, char })
-
-    , { stack: [], result: [] }
+    tokens,
+    (acc, token, i) => i + 1 === tokens.length
+      ? moveToResult({ ...acc, token })
+      : operators.includes(token)
+        ? handleOperator({ ...acc, operator: token })
+        : operandToResult({ ...acc, operand: token }),
+    { stack: [], result: [] }
   ).result;
 
 module.exports = infixToPostfix;
