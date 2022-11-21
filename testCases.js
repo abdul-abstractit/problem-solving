@@ -38,17 +38,17 @@ const cases = [
     output: 0
   },
   {
-    input: [2, "+", 8, "/", 3, "*", 2, "/", 4],
-    output: 3
-  },
+    input: [2, "+", 8, "/", 4, "*", 4, "/", 4],
+    output: 4
+  }
 ];
 
 const throwError = ({ input, output }) => {
-  throw (`Error: for this ${input} input, expected result is ${output}`)
+  throw (`Error: for this (${input.join(' ')}) input, expected result is ${output}`)
 }
 const test = (fn, cases) => {
   cases.map(({ input, output }, i) => {
-    console.log(`Result: Input ${input.join(' ')} output: ${fn(input)}`)
+    console.log(`Result: Input (${input.join(' ')}) output: ${fn(input)}`)
     fn(input) === output 
       ? console.log(`Test ${i+1} passed`)
       : throwError({ input, output });
